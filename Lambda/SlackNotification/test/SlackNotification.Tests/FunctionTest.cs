@@ -13,7 +13,7 @@ public class FunctionTest
         // Invoke the lambda function and confirm the string was upper cased.
         var function = new SlackNotification();
         var context = new TestLambdaContext();
-        var result = function.FunctionHandler("test", context);
+        var result = function.SendSlackNotification("test", context);
 
         Assert.Equal("test", result);
     }
