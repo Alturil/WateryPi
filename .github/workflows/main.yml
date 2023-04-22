@@ -1,6 +1,6 @@
 # From: https://github.com/KasteM34/github-oidc-terraform
 
-name: "Terraform action"
+name: "WateryPi"
 
 on:
   push:
@@ -30,7 +30,7 @@ jobs:
     steps:
       - name: Git checkout
         uses: actions/checkout@v3
-        
+
       - name: Setup .NET
         uses: actions/setup-dotnet@v1
         with:
@@ -39,12 +39,6 @@ jobs:
       - name: Install AWS CLI
         run: dotnet tool install -g Amazon.Lambda.Tools
 
-      # - name: Restore dependencies
-      #   run: dotnet restore .
-
-      # - name: Dotnet build
-      #   run: dotnet build --no-restore Services.sln
-
       - name: Dotnet test
         run: dotnet test
 
@@ -52,7 +46,7 @@ jobs:
     #   working-directory: ./Services/ApiServices
     #   run: dotnet lambda deploy-serverless
 
-  deploy-terraform:
+  terraform:
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -72,7 +66,7 @@ jobs:
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
         with:
-          terraform_version: 1.2.5
+          terraform_version: 1.4.5
 
       - name: Terraform fmt
         id: fmt
@@ -93,42 +87,42 @@ jobs:
         if: github.event_name == 'pull_request'
         continue-on-error: true
 
-      - uses: actions/github-script@v6
-        if: github.event_name == 'pull_request'
-        env:
-          PLAN: "terraform\n${{ steps.plan.outputs.stdout }}"
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const output = `#### Terraform Format 🖌\`${{ steps.fmt.outcome }}\`
-            #### Terraform Initialization ⚙️\`${{ steps.init.outcome }}\`
-            #### Terraform Validation 🤖\`${{ steps.validate.outcome }}\`
-            <details><summary>Validation Output</summary>
+      # - uses: actions/github-script@v6
+      #   if: github.event_name == 'pull_request'
+      #   env:
+      #     PLAN: "terraform\n${{ steps.plan.outputs.stdout }}"
+      #   with:
+      #     github-token: ${{ secrets.GITHUB_TOKEN }}
+      #     script: |
+      #       const output = `#### Terraform Format 🖌\`${{ steps.fmt.outcome }}\`
+      #       #### Terraform Initialization ⚙️\`${{ steps.init.outcome }}\`
+      #       #### Terraform Validation 🤖\`${{ steps.validate.outcome }}\`
+      #       <details><summary>Validation Output</summary>
 
-            \`\`\`\n
-            ${{ steps.validate.outputs.stdout }}
-            \`\`\`
+      #       \`\`\`\n
+      #       ${{ steps.validate.outputs.stdout }}
+      #       \`\`\`
 
-            </details>
+      #       </details>
 
-            #### Terraform Plan 📖\`${{ steps.plan.outcome }}\`
+      #       #### Terraform Plan 📖\`${{ steps.plan.outcome }}\`
 
-            <details><summary>Show Plan</summary>
+      #       <details><summary>Show Plan</summary>
 
-            \`\`\`\n
-            ${process.env.PLAN}
-            \`\`\`
+      #       \`\`\`\n
+      #       ${process.env.PLAN}
+      #       \`\`\`
 
-            </details>
+      #       </details>
 
-            **Pushed by:** @${{ github.actor }}, **Action:** \`${{ github.event_name }}\``;
+      #       **Pushed by:** @${{ github.actor }}, **Action:** \`${{ github.event_name }}\``;
 
-            github.rest.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: output
-            })
+      #       github.rest.issues.createComment({
+      #         issue_number: context.issue.number,
+      #         owner: context.repo.owner,
+      #         repo: context.repo.repo,
+      #         body: output
+      #       })
 
       - name: Terraform Plan Status
         if: steps.plan.outcome == 'failure'
