@@ -44,7 +44,7 @@ jobs:
 
       - name: Dotnet deploy lambda
         # if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-        working-directory: src/SlackNotification
+        working-directory: ./Lambda/SlackNotification/src/SlackNotification
         run: dotnet lambda deploy-function    
 
   terraform:
