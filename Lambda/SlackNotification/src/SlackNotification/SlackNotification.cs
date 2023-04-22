@@ -5,7 +5,7 @@ using Amazon.Lambda.Core;
 
 namespace SlackNotification;
 
-public class Function
+public class SlackNotification
 {
 
     /// <summary>
@@ -14,7 +14,7 @@ public class Function
     /// <param name="input"></param>
     /// <param name="context"></param>
     /// <returns></returns>
-    public string FunctionHandler(string input, ILambdaContext context)
+    public string SendSlackNotification(string input, ILambdaContext context)
     {
         context.Logger.Log($"Hello from Lambda! - {input}");
         return input;
