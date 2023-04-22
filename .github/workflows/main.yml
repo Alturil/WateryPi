@@ -1,6 +1,6 @@
 # From: https://github.com/KasteM34/github-oidc-terraform
 
-name: "Terraform action"
+name: "WateryPi"
 
 on:
   push:
@@ -18,7 +18,35 @@ env:
   AWS_REGION: ${{ secrets.AWS_REGION }}
 
 jobs:
-  deploy:
+  dotnet-lambda-slack:
+    runs-on: ubuntu-latest
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+    defaults:
+      run:
+        shell: bash
+        working-directory: ./Lambda/SlackNotification
+    steps:
+      - name: Git checkout
+        uses: actions/checkout@v3
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: 6.0.x
+
+      - name: Install AWS CLI
+        run: dotnet tool install -g Amazon.Lambda.Tools
+
+      - name: Dotnet test
+        run: dotnet test
+
+    # - name: Deploy to Lambda
+    #   working-directory: ./Services/ApiServices
+    #   run: dotnet lambda deploy-serverless
+
+  terraform:
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -38,7 +66,7 @@ jobs:
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
         with:
-          terraform_version: 1.2.5
+          terraform_version: 1.4.5
 
       - name: Terraform fmt
         id: fmt
@@ -57,45 +85,7 @@ jobs:
         id: plan
         run: terraform plan -no-color
         if: github.event_name == 'pull_request'
-        continue-on-error: true
-
-      - uses: actions/github-script@v6
-        if: github.event_name == 'pull_request'
-        env:
-          PLAN: "terraform\n${{ steps.plan.outputs.stdout }}"
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const output = `#### Terraform Format 🖌\`${{ steps.fmt.outcome }}\`
-            #### Terraform Initialization ⚙️\`${{ steps.init.outcome }}\`
-            #### Terraform Validation 🤖\`${{ steps.validate.outcome }}\`
-            <details><summary>Validation Output</summary>
-            
-            \`\`\`\n
-            ${{ steps.validate.outputs.stdout }}
-            \`\`\`
-            
-            </details>
-            
-            #### Terraform Plan 📖\`${{ steps.plan.outcome }}\`
-            
-            <details><summary>Show Plan</summary>
-            
-            \`\`\`\n
-            ${process.env.PLAN}
-            \`\`\`
-            
-            </details>
-            
-            **Pushed by:** @${{ github.actor }}, **Action:** \`${{ github.event_name }}\``;
-            
-            github.rest.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: output
-            })
-
+        continue-on-error: true      
 
       - name: Terraform Plan Status
         if: steps.plan.outcome == 'failure'
