@@ -18,7 +18,40 @@ env:
   AWS_REGION: ${{ secrets.AWS_REGION }}
 
 jobs:
-  deploy:
+  dotnet-lambda-slack:
+    runs-on: ubuntu-latest
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+    defaults:
+      run:
+        shell: bash
+        working-directory: ./Lambda/SlackNotification
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: 6.0.x
+
+      - name: Install AWS CLI
+        run: dotnet tool install -g Amazon.Lambda.Tools
+
+      # - name: Restore dependencies
+      #   run: dotnet restore .
+
+      # - name: Dotnet build
+      #   run: dotnet build --no-restore Services.sln
+
+      - name: Dotnet test
+        run: dotnet test
+
+    # - name: Deploy to Lambda
+    #   working-directory: ./Services/ApiServices
+    #   run: dotnet lambda deploy-serverless
+
+  deploy-terraform:
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -70,32 +103,31 @@ jobs:
             #### Terraform Initialization ⚙️\`${{ steps.init.outcome }}\`
             #### Terraform Validation 🤖\`${{ steps.validate.outcome }}\`
             <details><summary>Validation Output</summary>
-            
+
             \`\`\`\n
             ${{ steps.validate.outputs.stdout }}
             \`\`\`
-            
+
             </details>
-            
+
             #### Terraform Plan 📖\`${{ steps.plan.outcome }}\`
-            
+
             <details><summary>Show Plan</summary>
-            
+
             \`\`\`\n
             ${process.env.PLAN}
             \`\`\`
-            
+
             </details>
-            
+
             **Pushed by:** @${{ github.actor }}, **Action:** \`${{ github.event_name }}\``;
-            
+
             github.rest.issues.createComment({
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
               body: output
             })
-
 
       - name: Terraform Plan Status
         if: steps.plan.outcome == 'failure'
