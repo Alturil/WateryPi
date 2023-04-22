@@ -42,6 +42,13 @@ jobs:
       - name: Dotnet test
         run: dotnet test
 
+      - name: Configure AWS credentials from AWS account
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE }}
+          aws-region: ${{ secrets.AWS_REGION }}
+          role-session-name: GitHub-OIDC-TERRAFORM
+
       - name: Debug shit        
         run: aws lambda get-function-configuration --function-name SendSlackNotification --region us-east-1
 
