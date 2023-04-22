@@ -45,7 +45,7 @@ jobs:
       - name: Dotnet deploy lambda
         # if: github.ref == 'refs/heads/main' && github.event_name == 'push'
         # working-directory: ./src/SlackNotification
-        run: dotnet lambda deploy-serverless
+        run: dotnet lambda deploy-function
 
     # - name: Deploy to Lambda
     #   working-directory: ./Services/ApiServices
