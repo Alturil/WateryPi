@@ -19,10 +19,7 @@ env:
 
 jobs:
   dotnet-lambda-slack:
-    runs-on: ubuntu-latest
-    env:
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+    runs-on: ubuntu-latest    
     defaults:
       run:
         shell: bash
@@ -48,10 +45,7 @@ jobs:
           role-to-assume: ${{ secrets.AWS_ROLE }}
           aws-region: ${{ secrets.AWS_REGION }}
           role-session-name: GitHub-OIDC-TERRAFORM
-
-      - name: Debug shit        
-        run: aws lambda get-function-configuration --function-name SendSlackNotification --region us-east-1
-
+      
       - name: Dotnet deploy lambda
         # if: github.ref == 'refs/heads/main' && github.event_name == 'push'
         working-directory: ./Lambda/SlackNotification/src/SlackNotification
