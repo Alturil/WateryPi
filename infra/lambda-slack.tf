@@ -17,14 +17,14 @@ resource "aws_iam_role" "iam_for_lambda" {
 }
 
 
-resource "aws_lambda_function" "test_lambda" {
+resource "aws_lambda_function" "send_slack_notification" {
   # If the file is not in the current working directory you will need to include a
   # path.module in the filename.
   filename      = data.archive_file.dummy.output_path
   function_name = "SendSlackNotification"
   role          = aws_iam_role.iam_for_lambda.arn
   handler       = "SlackNotification::SlackNotification.SlackNotification::SendSlackNotification"
-  runtime = "dotnet6"
+  runtime       = "dotnet6"
 }
 
 # Dummy file to allow the creation of the lambda function
