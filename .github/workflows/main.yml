@@ -42,6 +42,9 @@ jobs:
       - name: Dotnet test
         run: dotnet test
 
+      - name: Debug shit        
+        run: aws lambda get-function-configuration --function-name SendSlackNotification --region us-east-1
+
       - name: Dotnet deploy lambda
         # if: github.ref == 'refs/heads/main' && github.event_name == 'push'
         working-directory: ./Lambda/SlackNotification/src/SlackNotification
