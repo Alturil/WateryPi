@@ -16,9 +16,4 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\SlackNotification\SlackNotification.csproj" />
   </ItemGroup>
-  <ItemGroup>
-    <None Update=".env">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
 </Project>
