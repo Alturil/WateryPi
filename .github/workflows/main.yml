@@ -19,8 +19,7 @@ env:
 
 jobs:
   dotnet-lambda-slack:
-    runs-on: ubuntu-latest
-    environment: Production
+    runs-on: ubuntu-latest    
     defaults:
       run:
         shell: bash
@@ -50,13 +49,15 @@ jobs:
           role-session-name: GitHub-OIDC-TERRAFORM
 
       - name: Dotnet deploy lambda
+        env:
+          ENVIRONMENT: production
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
         working-directory: ./Lambda/SlackNotification/src/SlackNotification
         run: dotnet lambda deploy-function --function-name SendSlackNotification
 
   terraform:
     runs-on: ubuntu-latest
-    environment: Production
+    environment: production
     defaults:
       run:
         shell: bash
@@ -101,5 +102,7 @@ jobs:
         run: exit 1
 
       - name: Terraform Apply
+        env:
+          ENVIRONMENT: production
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
         run: terraform apply -auto-approve -input=false
