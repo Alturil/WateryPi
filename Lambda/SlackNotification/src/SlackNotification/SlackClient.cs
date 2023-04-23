@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -9,14 +10,15 @@ namespace SlackNotification;
 
 public class SlackClient
 {
-    private HttpClient _slackClient;    
+    private readonly HttpClient _slackClient;    
 
-    public SlackClient(Uri slackUri)
+    public SlackClient(Uri slackUri, string slackToken)
     {
         _slackClient = new HttpClient
         {
             BaseAddress = slackUri
         };
+        _slackClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", slackToken);
     }
 
     public async Task<HttpResponseMessage> SendTapEventAsync(string user)
@@ -58,12 +60,12 @@ public class SlackClient
                     }
                 }
             }
-        };
+        };        
 
         using StringContent jsonContent = new(
             JsonSerializer.Serialize(json),
             Encoding.UTF8,
-            "application/json"); ;
+            "application/json");               
 
         using HttpResponseMessage response = await _slackClient.PostAsync("", jsonContent);
 

@@ -12,11 +12,16 @@ public class SlackNotification
     public SlackNotification()
     {
         var slackUriEnvVar = Environment.GetEnvironmentVariable("SLACK_URI");
-        if (string.IsNullOrEmpty(slackUriEnvVar))
-        {
-            throw new Exception("No SLACK_URI env var set");
-        }
-        _slackClient = new SlackClient(new Uri(slackUriEnvVar));
+        var slackToken = Environment.GetEnvironmentVariable("SLACK_TOKEN");
+
+        //foreach (var envVar in new[] = [slackUriEnvVar, slackToken])
+        //{
+        //    if (string.IsNullOrEmpty(envVar))
+        //    {
+        //        throw new Exception($"No {envVar.} env var set");
+        //    }
+        //}        
+        _slackClient = new SlackClient(new Uri(slackUriEnvVar!), slackToken!);
     }
 
     public SlackNotification(SlackClient slackClient)
