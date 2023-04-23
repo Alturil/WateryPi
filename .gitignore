@@ -37,6 +37,9 @@ terraform.rc
 
 ### Dotnet
 
+# Env file
+**/.env
+
 *.swp
 *.*~
 project.lock.json

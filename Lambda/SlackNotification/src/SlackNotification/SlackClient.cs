@@ -9,7 +9,7 @@ namespace SlackNotification;
 
 public class SlackClient
 {
-    private HttpClient _slackClient;
+    private HttpClient _slackClient;    
 
     public SlackClient(Uri slackUri)
     {
@@ -68,6 +68,6 @@ public class SlackClient
         using HttpResponseMessage response = await _slackClient.PostAsync("", jsonContent);
 
         return response;
-    }
+    }   
 }
 

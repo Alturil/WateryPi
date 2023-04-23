@@ -1,5 +1,4 @@
 using Amazon.Lambda.Core;
-using System.Configuration;
 
 // Assembly attribute to enable the Lambda function's JSON input to be converted into a .NET class.
 [assembly: LambdaSerializer(typeof(Amazon.Lambda.Serialization.SystemTextJson.DefaultLambdaJsonSerializer))]
@@ -12,17 +11,16 @@ public class SlackNotification
 
     public SlackNotification()
     {
-        var slackuri = ConfigurationManager.AppSettings["slackUri"];
-        if (slackuri == null)
+        var slackUriEnvVar = Environment.GetEnvironmentVariable("SLACK_URI");
+        if (string.IsNullOrEmpty(slackUriEnvVar))
         {
-            throw new ArgumentNullException(nameof(slackuri));
+            throw new Exception("No SLACK_URI env var set");
         }
-
-        _slackClient = new SlackClient(new Uri(slackuri!)); ;
+        _slackClient = new SlackClient(new Uri(slackUriEnvVar));
     }
 
     public SlackNotification(SlackClient slackClient)
-    {
+    {        
         _slackClient = slackClient;
     }
 

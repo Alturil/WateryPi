@@ -19,7 +19,7 @@ env:
 
 jobs:
   dotnet-lambda-slack:
-    runs-on: ubuntu-latest    
+    runs-on: ubuntu-latest
     defaults:
       run:
         shell: bash
@@ -37,6 +37,8 @@ jobs:
         run: dotnet tool install -g Amazon.Lambda.Tools
 
       - name: Dotnet test
+        env:
+          SLACK_URI: ${{ secrets.SLACK_URI }}
         run: dotnet test
 
       - name: Configure AWS credentials from AWS account
@@ -45,7 +47,7 @@ jobs:
           role-to-assume: ${{ secrets.AWS_ROLE }}
           aws-region: ${{ secrets.AWS_REGION }}
           role-session-name: GitHub-OIDC-TERRAFORM
-      
+
       - name: Dotnet deploy lambda
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
         working-directory: ./Lambda/SlackNotification/src/SlackNotification
@@ -90,7 +92,7 @@ jobs:
         id: plan
         run: terraform plan -no-color
         if: github.event_name == 'pull_request'
-        continue-on-error: true      
+        continue-on-error: true
 
       - name: Terraform Plan Status
         if: steps.plan.outcome == 'failure'
