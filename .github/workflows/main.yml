@@ -19,6 +19,7 @@ env:
 
 jobs:
   dotnet-lambda-slack:
+    environment: Production
     runs-on: ubuntu-latest    
     defaults:
       run:
@@ -48,16 +49,14 @@ jobs:
           aws-region: ${{ secrets.AWS_REGION }}
           role-session-name: GitHub-OIDC-TERRAFORM
 
-      - name: Dotnet deploy lambda
-        env:
-          ENVIRONMENT: production
+      - name: Dotnet deploy lambda       
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
         working-directory: ./Lambda/SlackNotification/src/SlackNotification
         run: dotnet lambda deploy-function --function-name SendSlackNotification
 
   terraform:
     runs-on: ubuntu-latest
-    environment: production
+    environment: Production
     defaults:
       run:
         shell: bash
@@ -101,8 +100,6 @@ jobs:
         if: steps.plan.outcome == 'failure'
         run: exit 1
 
-      - name: Terraform Apply
-        env:
-          ENVIRONMENT: production
+      - name: Terraform Apply        
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
         run: terraform apply -auto-approve -input=false
