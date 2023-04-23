@@ -7,7 +7,7 @@ namespace SlackNotification;
 
 public class SlackNotification
 {
-    private SlackClient _slackClient;
+    private ISlackClient _slackClient;
 
     public SlackNotification()
     {
@@ -24,7 +24,7 @@ public class SlackNotification
         _slackClient = new SlackClient(new Uri(slackUriEnvVar!), slackToken!);
     }
 
-    public SlackNotification(SlackClient slackClient)
+    public SlackNotification(ISlackClient slackClient)
     {        
         _slackClient = slackClient;
     }
