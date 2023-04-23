@@ -17,7 +17,7 @@ public class SlackNotificationTest
     }
 
     [Fact]
-    public async Task SlackNotificationSent()
+    public async Task When_CallingSendSlackNotification_Then_ReturnsOk()
     {
         // Arrange
         var mockSlackClient = new Mock<ISlackClient>();
