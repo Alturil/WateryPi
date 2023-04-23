@@ -1,4 +1,5 @@
 using Amazon.Lambda.Core;
+using Amazon.SimpleSystemsManagement;
 
 // Assembly attribute to enable the Lambda function's JSON input to be converted into a .NET class.
 [assembly: LambdaSerializer(typeof(Amazon.Lambda.Serialization.SystemTextJson.DefaultLambdaJsonSerializer))]
@@ -8,21 +9,12 @@ namespace SlackNotification;
 public class SlackNotification
 {
     private ISlackClient _slackClient;
+    private IAwsParameterStoreClient _ssmClient;
 
     public SlackNotification()
-    {
-        var slackUriEnvVar = Environment.GetEnvironmentVariable("SLACK_URI");
-        var slackToken = Environment.GetEnvironmentVariable("SLACK_TOKEN");
-
-        //foreach (var envVar in new[] = [slackUriEnvVar, slackToken])
-        //{
-        //    if (string.IsNullOrEmpty(envVar))
-        //    {
-        //        throw new Exception($"No {envVar.} env var set");
-        //    }
-        //}        
-        _slackClient = new SlackClient(new Uri(slackUriEnvVar!), slackToken!);
-    }
+    {      
+        _ssmClient = new AwsParameterStoreClient(new AmazonSimpleSystemsManagementClient());
+    }    
 
     public SlackNotification(ISlackClient slackClient)
     {        
@@ -37,7 +29,16 @@ public class SlackNotification
     /// <returns></returns>
     public async Task<HttpResponseMessage> SendSlackNotification(string input, ILambdaContext context)
     {
-        context.Logger.Log($"Hello from Lambda! - {input}");
+        if (_slackClient == null)
+        {
+            var slackUri = await _ssmClient.GetValueAsync("slack_uri");
+            var slackToken = await _ssmClient.GetValueAsync("slack_token");
+
+            _slackClient = new SlackClient(new Uri(slackUri), slackToken);
+        }    
+
+        context.Logger.Log($"Sending Slack message - {input}");
+        
         return await _slackClient.SendTapEventAsync("Alturil");
     }
 }
