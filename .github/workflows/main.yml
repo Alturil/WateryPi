@@ -20,6 +20,7 @@ env:
 jobs:
   dotnet-lambda-slack:
     runs-on: ubuntu-latest
+    environment: Production
     defaults:
       run:
         shell: bash
@@ -55,6 +56,7 @@ jobs:
 
   terraform:
     runs-on: ubuntu-latest
+    environment: Production
     defaults:
       run:
         shell: bash
