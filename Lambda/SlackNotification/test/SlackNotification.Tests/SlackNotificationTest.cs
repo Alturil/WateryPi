@@ -1,8 +1,8 @@
 using Xunit;
-using Amazon.Lambda.Core;
 using Amazon.Lambda.TestUtilities;
 using System.Net;
 using dotenv.net;
+using Moq;
 
 namespace SlackNotification.Tests;
 
@@ -19,9 +19,12 @@ public class SlackNotificationTest
     [Fact]
     public async Task SlackNotificationSent()
     {
+        // Arrange
+        var mockSlackClient = new Mock<ISlackClient>();
+        mockSlackClient.Setup(c => c.SendTapEventAsync(It.IsAny<string>()))
+            .ReturnsAsync(new HttpResponseMessage(statusCode: HttpStatusCode.OK));
 
-        // Invoke the lambda function and confirm the string was upper cased.
-        var function = new SlackNotification();
+        var function = new SlackNotification(mockSlackClient.Object);
         var context = new TestLambdaContext();
         var result = await function.SendSlackNotification("test", context);
 

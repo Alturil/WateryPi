@@ -1,16 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http.Headers;
+﻿using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
-using System.Threading.Tasks;
 
 namespace SlackNotification;
 
-public class SlackClient
+public class SlackClient : ISlackClient
 {
-    private readonly HttpClient _slackClient;    
+    private readonly HttpClient _slackClient;
 
     public SlackClient(Uri slackUri, string slackToken)
     {
@@ -60,16 +56,16 @@ public class SlackClient
                     }
                 }
             }
-        };        
+        };
 
         using StringContent jsonContent = new(
             JsonSerializer.Serialize(json),
             Encoding.UTF8,
-            "application/json");               
+            "application/json");
 
         using HttpResponseMessage response = await _slackClient.PostAsync("", jsonContent);
 
         return response;
-    }   
+    }
 }
 

@@ -1,4 +1,4 @@
-data "aws_iam_policy_document" "assume_role" {
+data "aws_iam_policy_document" "slack_lambda_policy" {
   statement {
     effect = "Allow"
 
@@ -9,11 +9,22 @@ data "aws_iam_policy_document" "assume_role" {
 
     actions = ["sts:AssumeRole"]
   }
+
+  statement {
+    effect = "Allow"
+    actions = [
+      "ssm:Describe*",
+      "ssm:Get*",
+      "ssm:List*"
+    ]
+    resources = ["*"]
+  }
 }
+
 
 resource "aws_iam_role" "iam_for_lambda" {
   name               = "iam_for_lambda"
-  assume_role_policy = data.aws_iam_policy_document.assume_role.json
+  assume_role_policy = data.aws_iam_policy_document.slack_lambda_policy.json
 }
 
 
@@ -25,6 +36,8 @@ resource "aws_lambda_function" "send_slack_notification" {
   role          = aws_iam_role.iam_for_lambda.arn
   handler       = "SlackNotification::SlackNotification.SlackNotification::SendSlackNotification"
   runtime       = "dotnet6"
+  memory_size   = 256
+  timeout       = 30
 }
 
 # Dummy file to allow the creation of the lambda function
