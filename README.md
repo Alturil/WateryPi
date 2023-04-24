@@ -1,4 +1,4 @@
 # WateryPi
-[![WateryPi](https://github.com/Alturil/WateryPi/actions/workflows/main.yml/badge.svg)](https://github.com/Alturil/WateryPi/actions/workflows/main.yml)
+[![WateryPi-Deploy](https://github.com/Alturil/WateryPi/actions/workflows/deploy.yml/badge.svg)](https://github.com/Alturil/WateryPi/actions/workflows/deploy.yml)
 
 Overengineered irrigation
